@@ -33,7 +33,7 @@ public enum ConnectionStatus
 [RequireComponent(typeof(NetworkSceneManagerBase))]
 public class App : MonoBehaviour, INetworkRunnerCallbacks
 {
-	InputFieldHandler inputFieldHandler = new InputFieldHandler(); // Gantilah dengan tipe yang sesuai
+	private InputFieldHandler inputFieldHandler;
 
 	public string user;
 	public string password;
