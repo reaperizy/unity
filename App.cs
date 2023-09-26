@@ -7,7 +7,11 @@ using GameUI;
 using GameUI.Intro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Fusion.Photon.Realtime;
+// using Fusion.Authentication;
+
+// using InputFieldHandler;
 
 public enum ConnectionStatus
 {
@@ -29,6 +33,11 @@ public enum ConnectionStatus
 [RequireComponent(typeof(NetworkSceneManagerBase))]
 public class App : MonoBehaviour, INetworkRunnerCallbacks
 {
+	private InputFieldHandler inputFieldHandler;
+
+	public string user;
+	public string password;
+
 	[SerializeField] private SceneReference _introScene;
 	[SerializeField] private Player _playerPrefab;
 	[SerializeField] private Session _sessionPrefab;
@@ -67,9 +76,32 @@ public class App : MonoBehaviour, INetworkRunnerCallbacks
 		get => _allowInput && Session != null && Session.PostLoadCountDown.Expired(Session.Runner);
 		set => _allowInput = value;
 	} 
+
+	private void Start()
+	{
+		// Do not connect to Photon Fusion immediately
+		// FusionNetwork.ConnectUsingSettingsWithAuthInfo(authInfo);
+
+		// Instead, add a listener to the input field that invokes Connect() when the user presses enter
+		inputFieldHandler.inputField.onEndEdit.AddListener(delegate {Connect();});
+	}
+
+	private void GetDataFromInputField()
+	{
+		// Find the inputfield by tag
+		InputField userField = GameObject.FindWithTag("User").GetComponent<InputField>();
+		InputField passwordField = GameObject.FindWithTag("Password").GetComponent<InputField>();
+
+		// Get the text from inputfield
+		user = userField.text;
+		password = passwordField.text;
+	}
+
+
 	//testing
 	private void Awake()
 	{
+		
 		App[] apps = FindObjectsOfType<App>();
 
 		Application.targetFrameRate = 60;
@@ -86,7 +118,10 @@ public class App : MonoBehaviour, INetworkRunnerCallbacks
 
 		if (_loader==null)
 		{
+			// Get the data from inputfield
+			GetDataFromInputField();
 			_loader = GetComponent<NetworkSceneManagerBase>();
+
 		
 			DontDestroyOnLoad(gameObject);
 
@@ -103,19 +138,33 @@ public class App : MonoBehaviour, INetworkRunnerCallbacks
 
 	private void Connect()
 	{
-		if (_runner == null)
-		{
-			SetConnectionStatus(ConnectionStatus.Connecting);
-            _runner = Instantiate(networkRunnerPrefab);
-            _runner.transform.SetParent(transform);
-            _runner.name = "Session";
+		// if (_runner == null)
+		// {
+		// 	SetConnectionStatus(ConnectionStatus.Connecting);
+        //     _runner = Instantiate(networkRunnerPrefab);
+        //     _runner.transform.SetParent(transform);
+        //     _runner.name = "Session";
 
-            /*GameObject go = new GameObject("Session");
-			go.transform.SetParent(transform);
+        //     /*GameObject go = new GameObject("Session");
+		// 	go.transform.SetParent(transform);
 
-			_runner = go.AddComponent<NetworkRunner>();*/
-			_runner.AddCallbacks(this);
-		}
+		// 	_runner = go.AddComponent<NetworkRunner>();*/
+		// 	_runner.AddCallbacks(this);
+		// }
+
+		// Create a dictionary to store the authentication data
+		Dictionary<string, object> authInfo = new Dictionary<string, object>();
+		// Add the username and password from the inputValue variable to the dictionary
+		// Mengambil nilai input dari InputFieldHandler
+		string inputValue = inputFieldHandler.GetInputValue();
+
+		// Menggunakan nilai inputValue dalam kode Anda
+		authInfo.Add("user", inputValue);
+		authInfo.Add("pass", inputValue);
+
+		// Connect to Photon Fusion using the settings and the authInfo
+		// FusionNetwork.ConnectUsingSettingsWithAuthInfo(authInfo);
+
 	}
 
 	public void Disconnect()
@@ -145,14 +194,14 @@ public class App : MonoBehaviour, INetworkRunnerCallbacks
 		Connect();
 
 		SetConnectionStatus(ConnectionStatus.Starting);
-		
+
 		// Create a new AuthenticationValues
 		AuthenticationValues authentication = new AuthenticationValues();
 
-		// Setup
-		authentication.AuthType = CustomAuthenticationType.Custom;
-		authentication.AddAuthParameter("user", "user");
-		authentication.AddAuthParameter("pass", "pass");
+		// // Setup
+		// authentication.AuthType = CustomAuthenticationType.Custom;
+		// authentication.AddAuthParameter("user", "user");
+		// authentication.AddAuthParameter("pass", "pass");
 
 
 		//Debug.Log($"Starting game with session {props.RoomName}, player limit {props.PlayerLimit}");
