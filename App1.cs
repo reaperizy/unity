@@ -38,6 +38,12 @@ public class App : MonoBehaviour, INetworkRunnerCallbacks
 	public string user;
 	public string password;
 
+	// Add the SerializeField attribute to the inputfield variables
+    [SerializeField]
+    private InputField userField;
+    [SerializeField]
+    private InputField passwordField;
+
 	[SerializeField] private SceneReference _introScene;
 	[SerializeField] private Player _playerPrefab;
 	[SerializeField] private Session _sessionPrefab;
@@ -88,9 +94,9 @@ public class App : MonoBehaviour, INetworkRunnerCallbacks
 
 	private void GetDataFromInputField()
 	{
-		// Find the inputfield by tag
-		InputField userField = GameObject.FindWithTag("User").GetComponent<InputField>();
-		InputField passwordField = GameObject.FindWithTag("Password").GetComponent<InputField>();
+		// // Find the inputfield by tag
+		// InputField userField = GameObject.FindWithTag("User").GetComponent<InputField>();
+		// InputField passwordField = GameObject.FindWithTag("Password").GetComponent<InputField>();
 
 		// Get the text from inputfield
 		user = userField.text;
@@ -138,19 +144,19 @@ public class App : MonoBehaviour, INetworkRunnerCallbacks
 
 	private void Connect()
 	{
-		// if (_runner == null)
-		// {
-		// 	SetConnectionStatus(ConnectionStatus.Connecting);
-        //     _runner = Instantiate(networkRunnerPrefab);
-        //     _runner.transform.SetParent(transform);
-        //     _runner.name = "Session";
+		if (_runner == null)
+		{
+			SetConnectionStatus(ConnectionStatus.Connecting);
+            _runner = Instantiate(networkRunnerPrefab);
+            _runner.transform.SetParent(transform);
+            _runner.name = "Session";
 
-        //     /*GameObject go = new GameObject("Session");
-		// 	go.transform.SetParent(transform);
+            /*GameObject go = new GameObject("Session");
+			go.transform.SetParent(transform);
 
-		// 	_runner = go.AddComponent<NetworkRunner>();*/
-		// 	_runner.AddCallbacks(this);
-		// }
+			_runner = go.AddComponent<NetworkRunner>();*/
+			_runner.AddCallbacks(this);
+		}
 
 		// Create a dictionary to store the authentication data
 		Dictionary<string, object> authInfo = new Dictionary<string, object>();
