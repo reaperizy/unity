@@ -30,8 +30,8 @@ public enum ConnectionStatus
 [RequireComponent(typeof(NetworkSceneManagerBase))]
 public class App : MonoBehaviour, INetworkRunnerCallbacks
 {
-	[SerializeField] private string user; // variabel untuk user
-    [SerializeField] private string pass; // variabel untuk pass
+	[SerializeField] private string email; // variabel untuk user
+    [SerializeField] private string password; // variabel untuk pass
     [SerializeField] private InputField userInput; // referensi ke Input Field untuk user
     [SerializeField] private InputField passInput; // referensi ke Input Field untuk pass
 
@@ -145,7 +145,7 @@ public class App : MonoBehaviour, INetworkRunnerCallbacks
 		StartSession(_sharedMode ? GameMode.Shared : GameMode.Host, props, !_sharedMode);
 	}
 
-	public void Login(string user, string pass, SessionProps props)
+	public void Login(string email, string password, SessionProps props)
 	{
 		Connect();
 		StartSession(_sharedMode ? GameMode.Shared : GameMode.Host, props, !_sharedMode);
@@ -171,8 +171,8 @@ public class App : MonoBehaviour, INetworkRunnerCallbacks
 
 		// Setup
 		authentication.AuthType = CustomAuthenticationType.Custom;
-		authentication.AddAuthParameter("user", "user");
-		authentication.AddAuthParameter("pass", "pass");
+		authentication.AddAuthParameter("email", "email");
+		authentication.AddAuthParameter("password", "password");
 
 
 		//Debug.Log($"Starting game with session {props.RoomName}, player limit {props.PlayerLimit}");
@@ -197,8 +197,8 @@ public class App : MonoBehaviour, INetworkRunnerCallbacks
 	 public void OnButtonClick()
     {
         // mengambil nilai user dan pass dari Input Field
-        user = userInput.text;
-        pass = passInput.text;
+        email = userInput.text;
+        password = passInput.text;
 
         // memanggil fungsi Connect() dan StartSession()
         // Connect();
